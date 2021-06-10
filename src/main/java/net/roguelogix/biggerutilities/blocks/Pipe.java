@@ -34,16 +34,20 @@ public class Pipe extends Block {
     @RegisterBlock.Instance
     public static Pipe INSTANCE;
 
-    public Pipe() {
-        super(Properties.create(Material.IRON).hardnessAndResistance(2, 10).setAllowsSpawn((a, b, c, d) -> false).notSolid());
+    public Pipe(Properties properties) {
+        super(properties);
         BlockState defaultState = this.getDefaultState();
-        defaultState = defaultState.with(TOP_CONNECTED_PROPERTY, false);
-        defaultState = defaultState.with(BOTTOM_CONNECTED_PROPERTY, false);
-        defaultState = defaultState.with(NORTH_CONNECTED_PROPERTY, false);
-        defaultState = defaultState.with(SOUTH_CONNECTED_PROPERTY, false);
-        defaultState = defaultState.with(EAST_CONNECTED_PROPERTY, false);
-        defaultState = defaultState.with(WEST_CONNECTED_PROPERTY, false);
+        defaultState = defaultState.with(TOP_CONNECTED_PROPERTY, true);
+        defaultState = defaultState.with(BOTTOM_CONNECTED_PROPERTY, true);
+        defaultState = defaultState.with(NORTH_CONNECTED_PROPERTY, true);
+        defaultState = defaultState.with(SOUTH_CONNECTED_PROPERTY, true);
+        defaultState = defaultState.with(EAST_CONNECTED_PROPERTY, true);
+        defaultState = defaultState.with(WEST_CONNECTED_PROPERTY, true);
         this.setDefaultState(defaultState);
+    }
+
+    public Pipe() {
+        this(Properties.create(Material.IRON).hardnessAndResistance(2, 10).setAllowsSpawn((a, b, c, d) -> false).notSolid());
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -73,7 +77,11 @@ public class Pipe extends Block {
         if (tile == null) {
             return;
         }
-        tile.neighborChanged(neighbor);
+        Direction dir = Direction.byLong(neighbor.getX() - pos.getX(), neighbor.getY() - pos.getY(), neighbor.getZ() - pos.getZ());
+        if (dir == null) {
+            return;
+        }
+        tile.neighborChanged(dir);
     }
 
     @Override
@@ -84,7 +92,7 @@ public class Pipe extends Block {
             return;
         }
         for (Direction value : Direction.values()) {
-            tile.neighborChanged(pos.offset(value));
+            tile.neighborChanged(value);
         }
     }
 
