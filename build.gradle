@@ -1,44 +1,102 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-
-        jcenter()
+        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
+        maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
-version = '0.0.0'
-group = 'net.roguelogix.biggerutilities' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "biggerutilities-${mc_version}"
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
-repositories {
-    maven {
-        url 'https://www.dogforce-games.com/maven/'
-    }
-    maven {
-        url 'https://squiddev.cc/maven/'
-    }
+version = "${majorVersion}.${minorVersion}.${patchVersion}" as Object
+if (!"${postfixVersion}".isEmpty()) {
+    version += "-${postfixVersion}"
 }
 
+group = 'net.roguelogix.biggerutilties'
+archivesBaseName = "biggerutilties-${mc_version}"
 
 minecraft {
-    mappings channel: 'snapshot', version: "${forge_mappings}"
+    mappings channel: "${mapping_channel}", version: "${mapping_version}"
+    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                BiggerUtilities {
+                    source sourceSets.main
+                }
+                Phosphophyllite {
+                    source project(':Phosphophyllite').sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                BiggerUtilities {
+                    source sourceSets.main
+                }
+                Phosphophyllite {
+                    source project(':Phosphophyllite').sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+//            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
+
+            mods {
+                BiggerUtilities {
+                    source sourceSets.main
+                }
+                Phosphophyllite {
+                    source project(':Phosphophyllite').sourceSets.main
+                }
+            }
+        }
+    }
 }
 
 repositories {
@@ -59,54 +117,72 @@ repositories {
     maven {
         url 'https://modmaven.dev/'
     }
+    maven {
+        url 'https://squiddev.cc/maven/'
+    }
 }
 
 dependencies {
+    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
+    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
+    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    // Fixes ResolutionException. See https://github.com/MinecraftForge/MinecraftForge/issues/7893.
-    implementation('cpw.mods:securejarhandler') { version { strictly '0.9.45' } }
-
-    compile project(':Phosphophyllite')
-
-//    compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_mc_version}:${cc_version}")
-
-//    compileOnly "mekanism:Mekanism:${mekanism_mc_version}-${mekanism_version}:api"
+    compileOnly project(':Phosphophyllite')
 
     // compile against the JEI API but do not include it at runtime
 //    compileOnly fg.deobf("mezz.jei:jei-${jei_mc_version}:${jei_version}:api")
+
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([
-                "Specification-Title"   : "BiggerUtilities",
-//                "Specification-Vendor"    : "examplemodsareus",
-                "Specification-Version" : "1", // We are version 1 of ourselves
-                "Implementation-Title"  : project.name,
-                "Implementation-Version": "${version}",
-//                "Implementation-Vendor"   : "examplemodsareus",
-//                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Specification-Title"     : "BiggerUtilities",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
 
-// Example configuration to allow publishing using the maven-publish task
-// This is the preferred method to reobfuscate your jar file
-//jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-//publish.dependsOn('reobfJar')
+publish.dependsOn('reobfJar')
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
+gradle.projectsEvaluated {
+    def resource_targets = ["META-INF/mods.toml", "pack.mcmeta"]
+    def into_targets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
+    def properties = [
+            version         : version,
+            fmlVersion      : forge_version.substring(0, forge_version.indexOf('.')),
+            forgeVersion    : forge_version,
+            mcVersion       : mc_version,
+            phosVersionRange: project.project(":Phosphophyllite").property("compatibility").toString()
+    ]
+    processResources {
+        duplicatesStrategy = 'INCLUDE'
+        inputs.properties properties
+
+        def spec = copySpec {
+            from(sourceSets.main.resources) {
+                include resource_targets
+                expand properties
+            }
         }
-    }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+
+        with spec
+        into_targets.each {
+            def file = file(it)
+            if (file.exists()) {
+                copy {
+                    with spec
+                    into file
+                }
+            }
+        }
+
+        from(sourceSets.main.resources) {
+            exclude resource_targets
         }
     }
 }
