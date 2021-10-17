@@ -130,9 +130,8 @@ dependencies {
 
     compileOnly project(':Phosphophyllite')
 
-    // compile against the JEI API but do not include it at runtime
-//    compileOnly fg.deobf("mezz.jei:jei-${jei_mc_version}:${jei_version}:api")
-
+    runtimeOnly fg.deobf('curse.maven:JEI-238222:3448057')
+    runtimeOnly fg.deobf('curse.maven:ATM-364466:3461667')
 }
 
 jar {

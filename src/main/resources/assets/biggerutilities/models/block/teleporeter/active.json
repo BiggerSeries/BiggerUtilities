@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "up": "biggerutilities:block/teleporeter/top-active",
+    "down": "biggerutilities:block/teleporeter/bottom",
+    "north": "biggerutilities:block/teleporeter/side-active",
+    "south": "biggerutilities:block/teleporeter/side-active",
+    "east": "biggerutilities:block/teleporeter/side-active",
+    "west": "biggerutilities:block/teleporeter/side-active",
+    "particle": "biggerutilities:block/teleporeter/side"
+  }
+}

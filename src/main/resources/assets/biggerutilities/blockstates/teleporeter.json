@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=true": {
+      "model": "biggerutilities:block/teleporeter/active"
+    },
+    "active=false": {
+      "model": "biggerutilities:block/teleporeter/inactive"
+    }
+  }
+}
