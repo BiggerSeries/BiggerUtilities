@@ -1,3 +1,9 @@
+# 1.17.1-0.0.0-alpha-1
+
+# Misc
+ - fix typo in jar name
+ - fix mods.toml
+
 # 1.17.1-0.0.0-alpha
 New mod, who dis?
 
