@@ -5,7 +5,7 @@ issueTrackerURL="https://github.com/BiggerSeries/BiggerUtilities/issues/" #optio
 
 [[mods]] #mandatory
 modId="biggerutilities" #mandatory
-version="0.0.0-alpha" #mandatory
+version="${version}" #mandatory
 displayName="Bigger Utilities" #mandatory
 #updateJSONURL="http://myurl.me/" #optional
 displayURL="https://biggerseries.net/" #optional
@@ -18,22 +18,22 @@ authors="RogueLogix" #optional
 description='''
 '''
 
-[[dependencies.biggerreactors]] #optional
+[[dependencies.biggerutilities]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[36,)" #mandatory
+    versionRange="[${forgeVersion},)" #mandatory
     ordering="NONE"
     side="BOTH"
-[[dependencies.biggerreactors]]
+[[dependencies.biggerutilities]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.5]"
+    versionRange="[${mcVersion}]"
     ordering="NONE"
     side="BOTH"
-[[dependencies.biggerreactors]]
+[[dependencies.biggerutilities]]
     modId="phosphophyllite"
     mandatory=true
-    versionRange="[0.5.0-beta.1]"
+    versionRange="${phosVersionRange}"
     ordering="NONE"
     side="BOTH"
 
