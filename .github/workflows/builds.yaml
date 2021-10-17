@@ -8,7 +8,7 @@ jobs:
       - run: git submodule update --init --recursive
       - run: ./gradlew publish
       - run: mkdir jars
-      - run: mv build/libs/biggerutilties-* jars/
+      - run: mv build/libs/biggerutilities-* jars/
       - uses: actions/upload-artifact@v2
         with:
           name: jars

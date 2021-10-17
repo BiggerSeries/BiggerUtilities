@@ -26,8 +26,8 @@ if (!"${postfixVersion}".isEmpty()) {
     version += "-${postfixVersion}"
 }
 
-group = 'net.roguelogix.biggerutilties'
-archivesBaseName = "biggerutilties-${mc_version}"
+group = 'net.roguelogix.biggerutilities'
+archivesBaseName = "biggerutilities-${mc_version}"
 
 minecraft {
     mappings channel: "${mapping_channel}", version: "${mapping_version}"
